@@ -426,17 +426,20 @@ For the Cadenza Llama-8B sleeper, the best observed layer-8 FRA OV intervention 
 
 
 
+\subsection*{Reproducibility statement}
+Code is available at the anonymous repository linked in the abstract. The TinyStories sleeper is a public model (\Cref{sec:tinysleepers}); the Cadenza variant is fine-tuned from public weights on the public Cadenza dataset as described in \Cref{sec:llama}. The FRA decomposition is derived in \Cref{app:derivations}, with implementation details in \Cref{app:implementation}. SAE training and quality are reported in \Cref{app:tinystories_sae_quality}, and the steering and evaluation protocols in \Cref{app:sleeper_method}, \Cref{app:sleeper_per_seed}, and \Cref{app:cadenza_dom_layers}. Cadenza results use a fixed held-out set of 293 prompt pairs with greedy decoding, and we report bootstrap confidence intervals over prompts; TinyStories results are reported across SAE training seeds.
+
 \subsection*{Ethics statement}
-This paper presents work whose goal is to advance the field of Machine
-Learning. There are many potential societal consequences of our work, none
-which we feel must be specifically highlighted here.
+This work studies backdoored (``sleeper agent'') language models in order to build tools that locate and remove hidden behaviours. All models are either publicly released or fine-tuned by us on a public backdoor dataset, and the triggered behaviour is a fixed, harmless phrase. No human subjects or personal data are involved. The same analysis could in principle help an adversary design backdoors that are harder to find; we do not release any new attack method, and we believe the defensive value of better backdoor removal outweighs this risk.
+
+\subsection*{Use of large language models}
+We used LLM assistants (Claude, via Claude Code) to help write and run experiment code (evaluation, steering sweeps, statistics, and plotting), to help analyse results, and to draft and edit parts of the text, figure captions, and the presentation of derivations. GPT-4o is used as a judge to score alignment and coherence in the emergent-misalignment experiments (\Cref{sec:em}), as described there. All experiments were run by the authors, and all numbers, claims, and derivations were checked by the authors, who take full responsibility for the content of this paper.
 
 
 % In the unusual situation where you want a paper to appear in the
 % references without citing it in the main text, use \nocite
 % \nocite{langley00}
 
-% Add the authors' ICLR 2027 AI use statement here before submission.
 \bibliography{fra_paper}
 \bibliographystyle{iclr2027_conference}
 
