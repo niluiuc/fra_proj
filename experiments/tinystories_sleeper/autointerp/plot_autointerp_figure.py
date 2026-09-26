@@ -101,15 +101,15 @@ def main():
                                               ("conv_resid_mid", "Conventional (resid-mid steering)", ORANGE)]):
         ax = fig.add_subplot(g[1 + k, 0]); ax.set_axis_off()
         if k == 0:
-            ax.set_title("b   Steering-rank top-5: SAEBench's own explanation and its autointerp score",
+            ax.set_title("b   Steering-rank top-5: the judge's one-line description and how often it guessed right",
                          loc="left", fontsize=7.8, weight="semibold")
         cells = []
         for i, f in enumerate(TOP5[name]):
             s = sb[name][f]["scores"]
             cells.append([str(i + 1), f"{f}{FLAGS.get((name, f), '')}", sb[name][f]["explanation"],
-                          f"{np.mean(s):.2f}  ({min(s):.2f}–{max(s):.2f})"])
-        tab = ax.table(cellText=cells, colLabels=["rank", "feature", "SAEBench explanation (seed 42)",
-                                                 "score, mean (range)"],
+                          f"{100*np.mean(s):.0f}%  ({100*min(s):.0f}–{100*max(s):.0f}%)"])
+        tab = ax.table(cellText=cells, colLabels=["rank", "feature", "judge's one-line description (seed 42)",
+                                                 "% correct (range)"],
                        cellLoc="left", colLoc="left", bbox=[0.0, 0.0, 1.0, 0.86],
                        colWidths=[0.05, 0.07, 0.69, 0.19])
         tab.auto_set_font_size(False); tab.set_fontsize(6.4)
@@ -119,32 +119,40 @@ def main():
                 cell.set_facecolor(to_rgb(color) + (0.18,)); cell.set_text_props(weight="semibold")
         ax.text(0.0, 0.90, title, transform=ax.transAxes, fontsize=7.2, color=color, weight="semibold", va="bottom")
 
+    # ---- (c) plain bar chart: % correct guesses per method, mean over its 20 steered features ----
     ax = fig.add_subplot(g[3, 0])
     rng = np.random.default_rng(0)
-    groups = [("fra_ln1", "FRA", BLUE), ("conv_resid_mid", "conv.", ORANGE)]
-    vals = {n: np.array([np.mean(v["scores"]) for v in sb[n].values()]) for n, _, _ in groups}
-    labels = []
-    for yi, (n, short, color) in enumerate(groups):
+    groups = [("fra_ln1", "FRA", BLUE), ("conv_resid_mid", "Conventional", ORANGE)]
+    vals = {n: 100 * np.array([np.mean(v["scores"]) for v in sb[n].values()]) for n, _, _ in groups}
+    for xi, (n, short, color) in enumerate(groups):
         v = vals[n]
-        ax.scatter(v, yi + rng.uniform(-0.18, 0.18, len(v)), s=12, color=color, alpha=0.85,
-                   edgecolor="white", linewidth=0.3, zorder=3)
-        ax.plot([v.mean()] * 2, [yi - 0.32, yi + 0.32], color="#222222", linewidth=1.4, zorder=4)
-        labels.append(f"{short} (mean {v.mean():.2f})")
-    a, b = vals["fra_ln1"], vals["conv_resid_mid"]
+        ci = np.percentile([rng.choice(v, len(v)).mean() for _ in range(10000)], [2.5, 97.5])
+        ax.bar(xi, v.mean(), width=0.55, color=color, zorder=3)
+        ax.errorbar(xi, v.mean(), yerr=[[v.mean() - ci[0]], [ci[1] - v.mean()]], fmt="none",
+                    ecolor="#222222", elinewidth=1, capsize=3, zorder=4)
+        ax.text(xi, ci[1] + 3, f"{v.mean():.0f}%", ha="center", va="bottom", fontsize=8, weight="semibold",
+                color=color)
+    a, b = vals["fra_ln1"] / 100, vals["conv_resid_mid"] / 100
     boot = [rng.choice(a, len(a)).mean() - rng.choice(b, len(b)).mean() for _ in range(10000)]
     lo, hi = np.percentile(boot, [2.5, 97.5])
     p = mannwhitneyu(a, b, alternative="greater").pvalue
-    ax.axvline(0.5, color="#999999", linestyle=":", linewidth=0.9)
-    ax.set_yticks([0, 1]); ax.set_yticklabels(labels, fontsize=6.8)
-    for t, (_, _, color) in zip(ax.get_yticklabels(), groups):
-        t.set_color(color)
-    ax.set_ylim(-0.6, 1.6); ax.set_xlim(0, 1.02)
-    ax.set_xlabel("SAEBench autointerp detection score, mean over 3 seeds (0.5 = chance)", fontsize=7)
+    ax.axhline(50, color="#777777", linestyle=":", linewidth=1, zorder=2)
+    ax.text(1.88, 52, "coin flip", va="bottom", ha="right", fontsize=6.8, color="#666666")
+    ax.set_xticks([0, 1]); ax.set_xticklabels([s for _, s, _ in groups], fontsize=7.5)
+    ax.set_xlim(-0.5, 1.9); ax.set_ylim(0, 105)
+    ax.set_ylabel("correct guesses (%)", fontsize=7)
     ax.spines[["top", "right"]].set_visible(False)
-    ax.set_title(f"c   All 40 steered features: FRA {a.mean()-b.mean():+.2f} "
-                 f"(95% CI [{lo:.2f}, {hi:.2f}]; one-sided Mann-Whitney p = {p:.3f})",
-                 loc="left", fontsize=7.8, weight="semibold")
-    ax.set_position([0.13, ax.get_position().y0, 0.85, ax.get_position().height])
+    ax.set_title("c   Is each feature easy to describe?", loc="left", fontsize=7.8, weight="semibold")
+    ax.set_position([0.10, ax.get_position().y0, 0.26, ax.get_position().height])
+    fig.text(0.42, ax.get_position().y0 + ax.get_position().height * 0.5,
+             "For each steered feature (20 per method), an LLM judge writes a one-line\n"
+             "description from the feature's top examples, then reads new text snippets\n"
+             "and guesses, from the description alone, where the feature fires.\n"
+             "Bars: % of guesses that were right, averaged over the 20 features\n"
+             "(SAEBench autointerp, 3 seeds; error bars 95% CI).\n"
+             f"FRA features are easier to describe: +{100*(a.mean()-b.mean()):.0f} points "
+             f"(95% CI {100*lo:.0f} to {100*hi:.0f}; p = {p:.3f}).",
+             va="center", ha="left", fontsize=6.8, color="#333333", linespacing=1.35)
     fig.text(0.02, 0.008, "† Judge explanation disagrees with its own examples, all of which mark the trigger.\n"
              "‡ Main activation (<|endoftext|>) is masked by SAEBench; score refers to the explanation shown.",
              fontsize=6.0, color="#555555")
