@@ -385,6 +385,12 @@ We find that FRA-based steering significantly outperforms SAE based steering at 
 % \paragraph{Optimized comparison.} The wide range matters: the refined resid-mid coefficient lies outside the screened range ($|\alpha|>10$) on one seed, and two of the six conventional ln1 winners use feature addition rather than subtraction. After coefficient refinement on 200 prompts and five decoding seeds, the mean best JSD to clean across six SAE seeds is $0.416\pm0.034$ for OV$\to$OV, $0.391\pm0.034$ for conventional resid-mid, and $0.526\pm0.085$ for conventional ln1. These are selected optima; \Cref{fig:tinysleeper_wide_screen} displays the lower-cost screening trajectories, rather than those full-fidelity evaluations at every coefficient. At these selected operating points OV$\to$OV improves on additive steering at the same \texttt{ln1} hook and is comparable to, though not better than, additive steering at resid-mid, with visible seed and coefficient variation.
 
 
+% ======================================================================
+% TODO(Indranil): MAIN-TEXT AUTOINTERP SENTENCES -- write 1-3 sentences here
+% (end of the TinyStories section; cite \Cref{app:autointerp}). Watch the 9-page limit.
+% ======================================================================
+\textbf{[TODO(Indranil): 1--3 sentences on SAEBench autointerp, see \Cref{app:autointerp}]}
+
 \section{Cadenza Sleeper in Llama-8B}\label{sec:llama}
 
 
@@ -433,7 +439,7 @@ Code is available at the anonymous repository linked in the abstract. The TinySt
 This work studies backdoored (``sleeper agent'') language models in order to build tools that locate and remove hidden behaviours. All models are either publicly released or fine-tuned by us on a public backdoor dataset, and the triggered behaviour is a fixed, harmless phrase. No human subjects or personal data are involved. The same analysis could in principle help an adversary design backdoors that are harder to find; we do not release any new attack method, and we believe the defensive value of better backdoor removal outweighs this risk.
 
 \subsection*{Use of large language models}
-We used LLM assistants (Claude, via Claude Code) to help write and run experiment code (evaluation, steering sweeps, statistics, and plotting), to help analyse results, and to draft and edit parts of the text, figure captions, and the presentation of derivations. GPT-4o is used as a judge to score alignment and coherence in the emergent-misalignment experiments (\Cref{sec:em}), as described there. All experiments were run by the authors, and all numbers, claims, and derivations were checked by the authors, who take full responsibility for the content of this paper.
+We used LLM assistants (Claude, via Claude Code) to help write and run experiment code (evaluation, steering sweeps, statistics, and plotting), to help analyse results, and to draft and edit parts of the text, figure captions, and the presentation of derivations. GPT-4o is used as a judge to score alignment and coherence in the emergent-misalignment experiments (\Cref{sec:em}), as described there, and GPT-4o-mini is the judge in the SAEBench autointerp evaluation (\Cref{app:autointerp}). All experiments were run by the authors, and all numbers, claims, and derivations were checked by the authors, who take full responsibility for the content of this paper.
 
 
 % In the unusual situation where you want a paper to appear in the
@@ -740,6 +746,23 @@ We measure how accurately the retrained TopK SAEs ($d_{\mathrm{SAE}}=1536$, $k=3
 The attention-input SAE's clean activation $1-\mathrm{FVU}$ declines from 0.954 at layer~0 to 0.698 at layer~3. On deployment prompts, reconstructed QK alone explains 0.774--0.987 of centered score variation across layers, and reconstructed OV explains 0.874--0.984 of centered attention-output variation. The error-error QK term explains at most 0.004 on its own; the query-error QK, key-error QK, and OV-error terms reach 0.174, 0.066, and 0.156, respectively. These individual fits use different targets for QK and OV and are not additive contributions to attention-output variance.
 
 For the single-feature steering in \Cref{fig:tinystories_layers}(b), features are ranked by their mean deployment-minus-clean activation. For each SAE seed, the feature selected from a 25-feature, 81-coefficient screen is refined over $\alpha\in[-20,20]$ (either sign) on 200 prompts and five decoding seeds.
+
+% ======================================================================
+% TODO(Indranil): AUTOINTERP APPENDIX -- write 2-4 sentences of body text here
+% (see chat for suggested content). Figure below is final; only its caption is a placeholder.
+% ======================================================================
+\subsection{Autointerp of the steered features}
+\label{app:autointerp}
+
+\textbf{[TODO(Indranil): appendix text on the SAEBench autointerp evaluation]}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/autointerp_tinystories.pdf}
+% TODO(Indranil): replace the placeholder caption below (3-6 sentences).
+\caption{\textbf{[TODO(Indranil): caption for the autointerp figure]}}
+\label{fig:autointerp}
+\end{figure*}
 
 
 % summarizes
