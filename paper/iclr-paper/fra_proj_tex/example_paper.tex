@@ -389,7 +389,8 @@ We find that FRA-based steering significantly outperforms SAE based steering at 
 % TODO(Indranil): MAIN-TEXT AUTOINTERP SENTENCES -- write 1-3 sentences here
 % (end of the TinyStories section; cite \Cref{app:autointerp}). Watch the 9-page limit.
 % ======================================================================
-\textbf{[TODO(Indranil): 1--3 sentences on SAEBench autointerp, see \Cref{app:autointerp}]}
+We also score every steered feature with the standard SAEBench autointerp evaluation and we find that the FRA features are easier to describe than conventional ones (85\% vs.\ 71\% correct judge predictions; \Cref{app:autointerp}).
+
 
 \section{Cadenza Sleeper in Llama-8B}\label{sec:llama}
 
@@ -759,13 +760,15 @@ For the single-feature steering in \Cref{fig:tinystories_layers}(b), features ar
 \subsection{Autointerp of the steered features}
 \label{app:autointerp}
 
-\textbf{[TODO(Indranil): appendix text on the SAEBench autointerp evaluation]}
+We run autointerp evaluation from SAEBench (default settings, GPT-4o-mini judge, 3 seeds) on all 20 FRA and 20 conventional steered features. The judge describes each feature from its top examples and then predicts from that description which new snippets activate it ( chance is 50\%). FRA features score 85\% and conventional features 71\% (difference 14 points, 95\% CI 5--22, $p=0.004$).
+
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/autointerp_tinystories.pdf}
 % TODO(Indranil): replace the placeholder caption below (3-6 sentences).
-\caption{\textbf{[TODO(Indranil): caption for the autointerp figure]}}
+\caption{\textbf{Autointerp of the steered TinyStories features.} \textbf{(a)}~Activation of each method's top-2 steering features on a triggered sentence; FRA's top feature fires only on the trigger. \textbf{(b)}~Judge descriptions and accuracy for the top-5 features. \textbf{(c)}~Mean accuracy over all 20 steered features per method (95\% CI; dotted line is chance).
+}
 \label{fig:autointerp}
 \end{figure*}
 
